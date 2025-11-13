@@ -1,0 +1,282 @@
+/* 优化：降低立体感，改为更柔和的半透明模糊（Liquid Glass 轻量版） */
+
+html {
+  background-image: url('/src/im/16310275986d8b09cdbf34d79dd9f27a666ea5d46c.jpeg');
+  background-attachment: fixed;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  font-family: sans-serif;
+}
+
+body {
+  margin: 0 auto;
+  width: 100%;
+  max-width: 80ch;
+  padding: 1rem;
+  line-height: 1.5;
+  background: transparent; /* 去掉中间半透明背景，仅显示背景图片 */
+}
+
+* {
+  box-sizing: border-box;
+}
+
+h1 {
+  margin: 1rem 0;
+  font-size: 2.5rem;
+}
+
+/* ---------- 导航样式：轻柔半透明模糊 ---------- */
+
+/* 容器：更轻的模糊与更低的对比度 */
+.nav-links {
+    display: inline-flex; /* 使导航栏宽度随内容变化 */
+    flex-direction: row;
+    align-items: center;
+    justify-content: center; /* 居中对齐 */
+    gap: 6px; /* 按钮间距 */
+    padding: 6px; /* 内边距 */
+    border-radius: var(--radius-apple-x) / var(--radius-apple-y);
+    background: rgba(255, 255, 255, 0.12);
+    backdrop-filter: blur(12px) saturate(130%);
+    border: 1px solid rgba(255, 255, 255, 0.10);
+    box-shadow: 0 6px 18px rgba(10, 10, 10, 0.04), inset 0 1px 0 rgba(255,255,255,0.03);
+    margin: 0 auto; /* 居中导航栏 */
+    width: fit-content; /* 宽度根据内容动态调整 */
+    max-width: 100%; /* 防止超出屏幕 */
+}
+
+/* 导航菜单：保持横向排列 */
+.nav-links .nav-menu {
+    display: flex;
+    flex-direction: row;
+    gap: 6px; /* 按钮间距 */
+    align-items: center;
+    justify-content: center;
+    width: auto; /* 宽度由内容决定 */
+}
+
+/* 显式顺序和伸缩：brand 左，nav-menu 中心（按顺序排列），actions 右 */
+.nav-links .brand       { order: 1; flex: 0 0 auto; }
+.nav-links .nav-menu    { order: 2; display:flex; gap:8px; align-items:center; justify-content:center; flex: 1 1 auto; } /* gap 从 10px -> 8px */
+.nav-links .nav-actions { order: 3; flex: 0 0 auto; display:flex; gap:6px; align-items:center; } /* 从 8px -> 6px */
+
+/* 菜单按钮按 DOM 顺序横排（确保不被其它样式覆盖） */
+.nav-links .nav-menu > * { display:inline-flex; }
+
+/* 窄屏时改为堆叠排列（可按需调整） */
+@media (max-width: 635px) {
+  .nav-links{
+    flex-direction:column;
+    align-items:stretch;
+  }
+  .nav-links .nav-menu{
+    flex-direction:column;
+    gap:8px;
+    width:100%;
+    justify-content:flex-start;
+  }
+  .nav-links .nav-actions{ width:100%; justify-content:center; }
+}
+
+/* 按钮（椭圆矩形，半透明） */
+.liquid-button,
+.nav-links a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 6px 12px;      /* 从 8px 14px 缩小为 6px 12px */
+  border-radius: var(--radius-button-x) / var(--radius-button-y);
+  background: rgba(255,255,255,0.20);
+  backdrop-filter: blur(10px) saturate(120%);
+  border: 1px solid rgba(255,255,255,0.14);
+  color: #0f172a;
+  text-decoration: none;
+  font-weight: 500;
+  transition: background 180ms ease, transform 160ms ease, box-shadow 160ms ease;
+  box-shadow: none;
+}
+
+/* 悬停：颜色略加深并有微小缩放（不是放大） */
+.liquid-button:hover,
+.nav-links a:hover,
+.nav-links a:focus {
+  background: rgba(255,255,255,0.28);
+  transform: scale(0.99); /* 轻微收缩，减少“悬浮”感 */
+  box-shadow: 0 6px 14px rgba(10,10,10,0.03);
+}
+
+/* 选中状态（active/tab）：更明显但仍柔和 */
+.liquid-tab-active {
+  background: rgba(255,255,255,0.36);
+  border: 1px solid rgba(255,255,255,0.18);
+}
+
+/* 图标类：保持色彩但无强内阴影 */
+.liquid-icon {
+  height: 32px;
+  width: 32px;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, rgba(59,130,246,0.95), rgba(6,182,212,0.9));
+  color: #fff;
+  box-shadow: none;
+}
+
+/* 强制菜单按顺序横向排布（优先于其它规则）*/
+.nav-links .nav-menu {
+  display: flex;
+  flex-direction: row;
+  gap: 8px; /* 保持与上面一致，原为 10px */
+  align-items: center;
+}
+
+/* 按钮基础增强 */
+.nav-links a,
+.liquid-button {
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 180ms ease, color 180ms ease, transform 140ms ease, box-shadow 180ms ease;
+}
+
+/* 苹果蓝（macOS） */
+:root {
+  --apple-blue: #0A84FF;
+  --apple-blue-rgba: rgba(10,132,255,0.95);
+  --apple-blue-ring: rgba(10,132,255,0.14);
+  --glass-bg: rgba(255,255,255,0.12);
+  --glass-bg-strong: rgba(255,255,255,0.28);
+  --glass-border: rgba(255,255,255,0.10);
+  --btn-bg: rgba(255,255,255,0.20);
+  --btn-bg-hover: rgba(255,255,255,0.30);
+  --text: #0f172a;
+  /* Apple 风格连续弧度（用椭圆半径模拟 continuous corners） */
+  --radius-apple-x: 14px;
+  --radius-apple-y: 18px;
+  --radius-button-x: 12px;
+  --radius-button-y: 14px;
+}
+
+/* 悬停 / 聚焦 / 激活 状态（变成苹果蓝） */
+.nav-links a:hover,
+.nav-links a:focus,
+.nav-links a:active,
+.nav-links a.active,
+.liquid-tab-active,
+.liquid-button:hover,
+.liquid-button:focus,
+.liquid-button:active {
+  background: var(--apple-blue-rgba);
+  color: #ffffff;
+  border-color: rgba(255,255,255,0.12);
+  -webkit-backdrop-filter: blur(8px) saturate(120%);
+  backdrop-filter: blur(8px) saturate(120%);
+  box-shadow: 0 6px 18px rgba(10,10,10,0.06);
+  transform: scale(0.997);
+}
+
+/* 键盘可见焦点环（可访问性） */
+.nav-links a:focus-visible,
+.liquid-button:focus-visible {
+  outline: none;
+  box-shadow:
+    0 6px 18px rgba(10,10,10,0.06),
+    0 0 0 6px var(--apple-blue-ring);
+}
+
+/* 小屏与中屏保持一致的顺序与间距（覆盖可能的移动端样式） */
+@media screen and (max-width: 635px) {
+  .nav-links .nav-menu { flex-direction: column; gap: 6px; width: 100%; }
+  .nav-links a { width: 100%; justify-content: center; padding: 8px 10px; } /* 更紧凑的按钮 */
+}
+
+/* 确保已标记 active 的链接视觉一致（若通过 JS 添加 .active） */
+.nav-links a.active {
+  background: var(--apple-blue-rgba);
+  color: #fff;
+}
+
+/* 响应式：在中等及以上宽度显示为横向导航 */
+@media screen and (min-width: 636px) {
+  .nav-links {
+    display: flex;
+    align-items: center;
+    justify-content: center; /* 居中对齐 */
+    width: fit-content; /* 宽度根据内容动态调整 */
+    gap: 8px;     /* 从 12px -> 8px */
+    padding: 8px; /* 从 10px -> 8px */
+  }
+
+  .nav-links .nav-menu {
+    display: flex;
+    gap: 8px; /* 大屏幕按钮间距 */
+    align-items: center;
+  }
+
+  .nav-links a {
+    padding: 8px 12px; /* 从 9px 16px -> 8px 12px */
+  }
+}
+
+/* 小屏备用：堆叠式按钮外观 */
+@media screen and (max-width: 635px) {
+  .liquid-button {
+    width: 100%;
+    justify-content: center;
+    padding: 10px;
+    text-align: center;
+  }
+}
+
+/* 导航菜单：移除 margin-right，仅保留 gap */
+.nav-links .nav-menu {
+  display: flex;
+  flex-direction: row;
+  gap: 6px; /* 缩小按钮间距 */
+  align-items: center;
+}
+
+.nav-links .nav-menu > * {
+  margin-right: 0; /* 移除外边距，避免与 gap 冲突 */
+}
+
+/* 按钮样式：缩小内边距 */
+.nav-links a,
+.liquid-button {
+  padding: 4px 10px; /* 缩小按钮内边距 */
+  font-size: 0.9rem; /* 缩小字体 */
+  width: auto; /* 确保按钮宽度根据内容调整 */
+}
+
+/* 响应式：小屏幕下的间距调整 */
+@media screen and (max-width: 635px) {
+  .nav-links .nav-menu {
+    flex-direction: column;
+    gap: 6px; /* 小屏幕下的按钮间距 */
+  }
+
+  .nav-links a {
+    width: 100%; /* 按钮宽度占满 */
+    justify-content: center;
+    padding: 6px 8px; /* 更紧凑的按钮样式 */
+  }
+}
+
+/* 响应式：大屏幕下的间距调整 */
+@media screen and (min-width: 636px) {
+  .nav-links {
+    gap: 6px; /* 统一大屏幕间距 */
+    padding: 6px; /* 缩小导航栏内边距 */
+  }
+
+  .nav-links .nav-menu {
+    gap: 6px; /* 统一大屏幕按钮间距 */
+  }
+
+  .nav-links a {
+    padding: 6px 10px; /* 缩小按钮内边距 */
+  }
+}
